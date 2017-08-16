@@ -1,0 +1,80 @@
+
+Reproducible Research Course Project 1
+=======================================
+
+##Analysing Activity Data
+
+1. Code for reading in the dataset and/or processing the data  
+
+```{r}
+activity <- read.csv("activity.csv")
+dim(activity)
+head(activity)
+summary(activity)
+
+```
+
+2. Histogram of the total number of steps taken each day  
+
+```{r}
+stepsPerDay <- tapply(activity$steps, activity$date, sum)
+hist(stepsPerDay, breaks = 10)
+
+```
+
+3. Mean and median number of steps taken each day  
+```{r}
+summary(stepsPerDay)
+
+```
+4. Time series plot of the average number of steps taken  
+```{r}
+meanIntervalSteps <- tapply(activity$steps, activity$interval, mean, na.rm = TRUE)
+summary(meanIntervalSteps)
+head(meanIntervalSteps)
+str(meanIntervalSteps)
+plot(names(meanIntervalSteps),meanIntervalSteps, type = "l")
+
+```
+
+5. The 5-minute interval that, on average, contains the maximum number of steps  
+```{r}
+names(meanIntervalSteps)[which.max(meanIntervalSteps)]
+
+```
+
+6. Code to describe and show a strategy for imputing missing data  
+    * Check how many rows with missing data exist
+    * Missing values will be impute according to mean value of corresponding interval
+    * Creating imputed data in a new column
+```{r}
+sum(is.na(activity$steps))
+activity$steps_imp <- ifelse(is.na(activity$steps), meanIntervalSteps[as.character(activity$interval)], activity$steps)
+
+```
+
+7. Histogram of the total number of steps taken each day after missing values are imputed  
+```{r}
+stepsPerDay <- tapply(activity$steps_imp, activity$date, sum)
+hist(stepsPerDay, breaks = 10)
+summary(stepsPerDay)
+
+```
+It seems that the imputation did not affect the mean (as expected),  
+but it caused the median to rise and become equal to the mean.
+
+8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends  
+```{r}
+activity$weekday <- as.numeric(format(as.Date(activity$date),"%w"))
+activity$is.weekend <- ifelse(activity$weekday == 6 | activity$weekday == 0, 1, 0)
+wdActivity <- subset(activity, is.weekend == 0)
+wdActivityIM <- tapply(wdActivity$steps_imp, wdActivity$interval, mean)
+weActivity <- subset(activity, is.weekend == 1)
+weActivityIM <- tapply(weActivity$steps_imp, weActivity$interval, mean)
+par(mfrow = c(2,1), mar = c(5,5,2,2))
+plot(names(wdActivityIM),wdActivityIM, type = "l", main = "Weekdays", xlab = "" , ylab = "Average Steps",xlim = c(0,2500))
+plot(names(weActivityIM),weActivityIM, type = "l", main = "Weekends", xlab = "Interval", ylab = "Average Steps",xlim = c(0,2500))
+ 
+```
+
+End of Project 1
