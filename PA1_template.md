@@ -17,12 +17,12 @@ hist(stepsPerDay, breaks = 10)
 
 
 ```r
-summary(stepsPerDay)['Mean']
+summary(stepsPerDay)[c('Mean','Median')]
 ```
 
 ```
-##  Mean 
-## 10770
+##   Mean Median 
+##  10770  10760
 ```
 
 ## What is the average daily activity pattern?

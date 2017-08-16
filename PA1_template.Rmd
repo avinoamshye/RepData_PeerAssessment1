@@ -20,7 +20,7 @@ hist(stepsPerDay, breaks = 10)
 
 ```{r}
 
-summary(stepsPerDay)['Mean']
+summary(stepsPerDay)[c('Mean','Median')]
 
 ```
 
